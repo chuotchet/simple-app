@@ -1,125 +1,103 @@
-// import React, { Component } from 'react';
-// import logo from './logo.svg';
-// import './App.css';
-//
-// class App extends Component {
-//   render() {
-//     return (
-//       <div className="App">
-//         <header className="App-header">
-//           <img src={logo} className="App-logo" alt="logo" />
-//           <h1 className="App-title">Welcome to React</h1>
-//         </header>
-//         <p className="App-intro">
-//           To get started, edit <code>src/App.js</code> and save to reload.
-//         </p>
-//       </div>
-//     );
-//   }
-// }
-//
-// export default App;
-
 import React, { Component } from 'react';
+import logo from './logo.svg';
+import './App.css';
 import { render } from "react-dom";
-import { withStyles } from "@material-ui/core/styles";
+import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
+import { MuiThemeProvider, createMuiTheme } from "@material-ui/core/styles";
 import Chart from "./chart";
+import * as firebase from "firebase";
 
-const styles = theme => ({
-  "chart-container": {
-    height: 400
-  }
-});
+import CoinChart from "./CoinChart";
+import CoinTable from "./CoinTable";
+
+const theme = createMuiTheme();
 
 class App extends Component {
-  state = {
-    lineChartData: {
-      labels: [],
-      datasets: [
-        {
-          type: "line",
-          label: "BTC-USD",
-          backgroundColor: "rgba(0, 0, 0, 0)",
-          borderColor: this.props.theme.palette.primary.main,
-          pointBackgroundColor: this.props.theme.palette.secondary.main,
-          pointBorderColor: this.props.theme.palette.secondary.main,
-          borderWidth: "2",
-          lineTension: 0.45,
-          data: []
-        }
-      ]
-    },
-    lineChartOptions: {
-      responsive: true,
-      maintainAspectRatio: false,
-      tooltips: {
-        enabled: true
-      },
-      scales: {
-        xAxes: [
-          {
-            ticks: {
-              autoSkip: true,
-              maxTicksLimit: 10
-            }
-          }
-        ]
-      }
-    }
-  };
 
-  componentDidMount() {
-    const subscribe = {
-      type: "subscribe",
-      channels: [
-        {
-          name: "ticker",
-          product_ids: ["BTC-USD"]
-        }
-      ]
-    };
+  // constructor(props) {
+  //   super(props);
+  //   this.state = {
+  //     lineChartData: {
+  //       labels: [],
+  //       datasets: [
+  //         {
+  //           type: "line",
+  //           label: "BTC-USD",
+  //           backgroundColor: "rgba(0, 0, 0, 0)",
+  //           borderColor: this.props.theme.palette.primary.main,
+  //           pointBackgroundColor: this.props.theme.palette.secondary.main,
+  //           pointBorderColor: this.props.theme.palette.secondary.main,
+  //           borderWidth: "2",
+  //           lineTension: 0.45,
+  //           data: []
+  //         }
+  //       ]
+  //     },
+  //     lineChartOptions: {
+  //       responsive: true,
+  //       maintainAspectRatio: false,
+  //       tooltips: {
+  //         enabled: true
+  //       },
+  //       scales: {
+  //         xAxes: [
+  //           {
+  //             ticks: {
+  //               autoSkip: true,
+  //               maxTicksLimit: 10
+  //             }
+  //           }
+  //         ]
+  //       }
+  //     }
+  //   };
+  // }
 
-    this.ws = new WebSocket("wss://ws-feed.gdax.com");
-
-    this.ws.onopen = () => {
-      this.ws.send(JSON.stringify(subscribe));
-    };
-
-    this.ws.onmessage = e => {
-      const value = JSON.parse(e.data);
-      if (value.type !== "ticker") {
-        return;
-      }
-
-      const oldBtcDataSet = this.state.lineChartData.datasets[0];
-      const newBtcDataSet = { ...oldBtcDataSet };
-      newBtcDataSet.data.push(value.price);
-
-      const newChartData = {
-        ...this.state.lineChartData,
-        datasets: [newBtcDataSet],
-        labels: this.state.lineChartData.labels.concat(
-          new Date().toLocaleTimeString()
-        )
-      };
-      this.setState({ lineChartData: newChartData });
-    };
-  }
-
-  componentWillUnmount() {
-    this.ws.close();
-  }
+  // componentDidMount() {
+  //   var priceRef = firebase.database().ref("test").child("coins");
+  //   var coinRef = priceRef.child("Bitcoin");
+  //
+  //   coinRef.limitToLast(1).on("child_added", snapshot => {
+  //     let data = snapshot.val();
+  //
+  //     var oldDataSet = this.state.lineChartData.datasets[0];
+  //     var newDataSet = { ...oldDataSet };
+  //     newDataSet.data.push(data.price);
+  //
+  //     const newChartData = {
+  //       ...this.state.lineChartData,
+  //       datasets: [newDataSet],
+  //       labels: this.state.lineChartData.labels.concat(
+  //         new Date(data.time*1000).toLocaleTimeString()
+  //       )
+  //     };
+  //     this.setState({ lineChartData: newChartData });
+  //
+  //   });
+  // }
+  //
+  // componentWillUnmount() {
+  // }
 
   render() {
-    const { classes } = this.props;
-
     return (
-      <div className={classes["chart-container"]}>
-        <Chart
-          data={this.state.lineChartData}
-          options={this.state.lineChartOptions}
-        />
-      </div>
+      <Router>
+        <div className="App">
+          <header className="App-header">
+            <img src={logo} className="App-logo" alt="logo" />
+            <h1 className="App-title">Welcome to React</h1>
+          </header>
+          <p className="App-intro">
+            To get started, edit <code>src/App.js</code> and save to reload.
+          </p>
+        </div>
+
+
+        <div>
+          <Route exact path="/chart" component={CoinChart} />
+          <Route exact path="/table" component={CoinTable} />
+        </div>
+      </Router>
     );
   }
 }
