@@ -98,8 +98,9 @@ class App extends Component {
           <Route exact path="/table" component={CoinTable} />
         </div>
       </Router>
+      </div>
     );
   }
 }
 
-export default withStyles(styles, { withTheme: true })(App);
+export default App;
