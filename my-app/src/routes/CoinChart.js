@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { render } from "react-dom";
 import { withStyles } from "@material-ui/core/styles";
-import Chart from "./chart";
+import Chart from "../chart";
 import * as firebase from "firebase";
 
 const styles = theme => ({

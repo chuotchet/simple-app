@@ -41,7 +41,7 @@ var testref = priceRef.child("Bitcoin");
 //   console.log("The read failed: " + errorObject.code);
 // });
 
-testref.limitToLast(1).on("child_added", function(snapshot, prevChildKey) {
+priceRef.on("value", function(snapshot, prevChildKey) {
   var newPost = snapshot.val();
   console.log(newPost);
 });

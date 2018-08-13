@@ -17,10 +17,6 @@ firebase.initializeApp(config);
 const theme = createMuiTheme();
 
 ReactDOM.render(
-  <MuiThemeProvider theme={theme}>
-    <BrowserRouter>
-        <Route path="/" component={App} />
-    </BrowserRouter>
-  </MuiThemeProvider>,
+    <App/>,
   document.getElementById("root")
 );
