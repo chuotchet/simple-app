@@ -9,7 +9,7 @@ class CoinTable extends React.Component {
         super(props);
 
         this.state = {
-            dataChart : []
+            dataTable : []
         };
     }
 
@@ -18,70 +18,89 @@ class CoinTable extends React.Component {
 
         priceRef.on("value", snapshot => {
             let data = snapshot.val();
+            let dataTable = [];
+
             for (let prop in data) {
+                let coin = data[prop];
+                let len = Object.keys(coin).length;
+                coin = coin[Object.keys(coin)[len-1]];
                 let coinData = {
                     'name' : prop,
-                    'price' : 0,
-                    'lastUpdated' : new Date()
+                    'price' : coin.price,
+                    'lastUpdated' : new Date(coin.time*1000).toLocaleTimeString()
                 }
-                this.setState({dataChart: this.state.dataChart.push(coinData)})
+
+                dataTable.push(coinData);
             }
-        }).off();
+
+            this.setState({dataTable: dataTable});
+            priceRef.off();
+        });
     }
 
     componentDidMount() {
       let priceRef = firebase.database().ref("test").child("coins");
 
-      for (let prop in this.state.dataChart) {
-          const coinName = prop;
-          let coinRef = priceRef.child(coinName);
+      // priceRef.limitToLast(1).on("child_added", snapshot => {
+      //   const coin = snapshot.val();
+      //   const coinName = snapshot.ref.key;
+      //   let coinData = coin[Object.keys(coin)[0]];
+      //   let newDataTable = this.state.dataTable;
+      //
+      //   newDataTable = newDataTable.map(c => {
+      //     if (c.name === coinName)
+      //       return {
+      //           'name' : coinName,
+      //           'price' : coinData.price,
+      //           'lastUpdated' : new Date(coinData.time*1000).toLocaleTimeString()
+      //       }
+      //     else return c;
+      //   });
+      //
+      //   console.log(newDataTable);
+      // });
 
+      var updateCoinPrice = () => {
+        const dataTable = this.state.dataTable;
+        for (let i = 0; i < dataTable.length; i++) {
+          const coin = dataTable[i];
+          const coinIndex = i;
+          let coinRef = priceRef.child(coin.name);
           coinRef.limitToLast(1).on("child_added", snapshot => {
               let data = snapshot.val();
 
-              this.setState()
+              let newDataTable = this.state.dataTable;
+              newDataTable[coinIndex].price = data.price;
+              newDataTable[coinIndex].lastUpdated = new Date(data.time*1000).toLocaleTimeString();
+              this.setState({dataTable: []});
+              this.setState({dataTable: newDataTable});
           });
+        }
       }
 
-      priceRef.on("value", snapshot => {
-        let data = snapshot.val();
-
-        var oldDataSet = this.state.lineChartData.datasets[0];
-        var newDataSet = { ...oldDataSet };
-        newDataSet.data.push(data.price);
-
-        const newChartData = {
-          ...this.state.lineChartData,
-          datasets: [newDataSet],
-          labels: this.state.lineChartData.labels.concat(
-            new Date(data.time*1000).toLocaleTimeString()
-          )
-        };
-        this.setState({ lineChartData: newChartData });
-
-      });
+      setTimeout(updateCoinPrice, 5000);
     }
 
     componentWillUnmount() {
     }
 
-    const columns = [{
-        header: 'Coin',
-        accessor: 'name'
-    }, {
-        header: 'Price',
-        accessor: 'price'
-    }, {
-        header: 'Last update',
-        accessor: 'lastUpdated'
-    }];
-
     render() {
+        const columns = [{
+            Header: 'Coin',
+            accessor: 'name'
+        }, {
+            Header: 'Price',
+            accessor: 'price'
+        }, {
+            Header: 'Last update',
+            accessor: 'lastUpdated'
+        }];
         return (
             <div>
-                <ReactTable
-                    data={this.state.dataChart}
-                    columns={columns}
+              <ReactTable
+                data={this.state.dataTable}
+                columns={columns}
+              />
             </div>
         );
     }

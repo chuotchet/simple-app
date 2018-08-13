@@ -1,7 +1,5 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import { BrowserRouter, Route } from 'react-router-dom'
-import { MuiThemeProvider, createMuiTheme } from "@material-ui/core/styles";
 import App from './App';
 import * as firebase from "firebase";
 
@@ -14,7 +12,6 @@ var config = {
     messagingSenderId: "554410383271"
   };
 firebase.initializeApp(config);
-const theme = createMuiTheme();
 
 ReactDOM.render(
     <App/>,

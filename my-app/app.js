@@ -34,21 +34,3 @@ new CronJob('*/5 * * * * *', function() {
     }
   });
 }, null, true, 'America/Los_Angeles');
-
-// var post = usersRef.push();
-//
-// post.set({
-//   author: "gracehop",
-//   title: "Announcing COBOL, a New Programming Language"
-// });
-
-// ref.on("value", function(snapshot) {
-//   console.log(snapshot.val());
-// }, function (errorObject) {
-//   console.log("The read failed: " + errorObject.code);
-// });
-
-// ref.on("child_added", function(snapshot, prevChildKey) {
-//   var newPost = snapshot.val();
-//   console.log(newPost);
-// });
